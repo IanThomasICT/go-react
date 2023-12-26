@@ -1,7 +1,11 @@
 package main
 
 import (
+	"embed"
+	"io/fs"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/carlmjohnson/requests"
 	"github.com/labstack/echo/v4"
@@ -18,7 +22,29 @@ type ResponseObj struct {
 	Data interface{} `json:"data"`
 }
 
+// Embed a file directory into the binary
+//
+//go:embed app/dist
+var reactDist embed.FS
+
+// pick if we want to use OS FS or Embedded FS
+func getFileSystem(useOS bool) http.FileSystem {
+	if useOS {
+		return http.FS(os.DirFS("static"))
+	}
+
+	log.Print("using embed mode")
+	fsys, err := fs.Sub(reactDist, "app/dist")
+	if err != nil {
+		panic(err)
+	}
+
+	return http.FS(fsys)
+}
+
 func main() {
+	useOS := len(os.Args) > 1 && os.Args[1] == "live"
+	assetHandler := http.FileServer(getFileSystem(useOS))
 
 	// HTTP Server / Config
 	e := echo.New()
@@ -27,7 +53,7 @@ func main() {
 	}))
 
 	// Web server to serve React files on "/"
-	e.Static("/", "static")
+	e.GET("/*", echo.WrapHandler(assetHandler))
 
 	// API Routes
 	api := e.Group("/api")
