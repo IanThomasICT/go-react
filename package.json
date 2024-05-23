@@ -1,9 +1,0 @@
-{
-  "name": "go-react",
-  "version": "1.0.0",
-  "main": "main.go",
-  "scripts": {
-    "build": "pnpm --filter=app build && go build",
-    "build:windows": "GOOS=windows go build"
-  }
-}
