@@ -6,7 +6,9 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <MainPage />
+      <main className="h-screen flex justify-center items-center">
+        <MainPage />
+      </main>
     </QueryClientProvider>
   );
 }

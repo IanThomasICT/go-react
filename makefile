@@ -1,8 +1,10 @@
+dev:
+	npm --prefix ./app run build:live &
+	go run main.go
+
 build:
-	cd app
-	pnpm build
-	cd ..	
+	npm --prefix ./app run build
 	go build
 
 clean: 
-	rm -rf ./static/
+	rm -rf ./static/**
